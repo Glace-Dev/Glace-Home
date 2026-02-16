@@ -44,7 +44,10 @@
         </div>
         <div class="hidden sm:flex items-center gap-1.5 opacity-60">
           <span class="text-[8px] font-bold tracking-[0.2em] uppercase">Aplayer</span>
-          <UIcon name="i-heroicons-musical-note-16-solid" class="text-[10px]" />
+          <UIcon
+            name="i-heroicons-musical-note-16-solid"
+            class="text-[10px]"
+          />
         </div>
       </div>
 
@@ -52,7 +55,10 @@
         <div class="flex-1 flex flex-col items-center sm:items-start justify-between min-w-0 sm:min-h-25 w-full">
           <div class="relative flex items-center py-2 w-full justify-center sm:justify-start">
             <div class="hidden sm:block absolute left-0 w-px h-full bg-linear-to-b from-white/30 to-transparent" />
-            <transition name="lyric-fade" mode="out-in">
+            <transition
+              name="lyric-fade"
+              mode="out-in"
+            >
               <p
                 :key="currentLyric"
                 class="sm:pl-4 text-[12px] sm:text-[11px] text-[#47FFE7] font-serif italic tracking-widest leading-relaxed text-center sm:text-left"
@@ -92,7 +98,11 @@
               />
             </template>
             <template v-else>
-              <div v-for="i in 48" :key="i" class="w-3 h-3 sm:w-2.5 sm:h-2.5 rounded-[2px] bg-white/5 animate-pulse" />
+              <div
+                v-for="i in 48"
+                :key="i"
+                class="w-3 h-3 sm:w-2.5 sm:h-2.5 rounded-[2px] bg-white/5 animate-pulse"
+              />
             </template>
           </div>
           <p class="text-[9px] sm:text-[8px] text-(--text-color) font-mono tracking-widest uppercase mt-1 opacity-70">
@@ -102,7 +112,10 @@
       </div>
     </UCard>
 
-    <div ref="playerDom" class="hidden" />
+    <div
+      ref="playerDom"
+      class="hidden"
+    />
   </div>
 </template>
 
