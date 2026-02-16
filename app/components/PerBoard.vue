@@ -2,13 +2,12 @@
   <div class="w-full mx-auto">
     <UCard
       :ui="{
-        // 维持 2:1 左右的比例，减小圆角以适配整体 UI
         root: 'relative overflow-hidden bg-background/50 backdrop-blur-sm dark:shadow-[inset_2px_2px_2px_0_rgba(255,255,255,0.2),2px_2px_2px_0_rgba(0,0,0,0.2)] shadow-[inset_2_2px_2px_0_rgba(0,0,0,0.2),2px_2px_2px_0_rgba(255,255,255,0.2)] ring-0',
-        body: 'p-0! aspect-9/5 flex flex-row'
+        body: 'p-0! sm:aspect-9/5 flex flex-col sm:flex-row'
       }"
       class="rounded-2xl border-b border-black shadow-2xl"
     >
-      <div class="w-50 relative flex items-center justify-center overflow-hidden border-r border-white/5">
+      <div class="w-full sm:w-50 relative flex items-center justify-center overflow-hidden border-b sm:border-b-0 sm:border-r border-white/5 py-8 sm:py-0">
         <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
           <div
             v-for="i in 3"
@@ -22,19 +21,19 @@
           />
         </div>
 
-        <div class="relative z-10">
+        <div class="relative">
           <div class="absolute inset-0 bg-white/10 blur-2xl scale-125 rounded-full" />
           <UAvatar
             src="/favicon.ico"
             alt="avatar"
-            class="w-28 h-28 rounded-full ring-2 ring-white/40 shadow-2xl object-cover relative z-10"
+            class="w-24 h-24 sm:w-28 sm:h-28 rounded-full ring-2 ring-white/40 shadow-2xl object-cover relative"
           />
         </div>
       </div>
 
-      <div class="flex-1 flex flex-col p-8 items-center justify-between bg-white/1">
+      <div class="flex-1 flex flex-col p-6 sm:p-8 items-center justify-between bg-white/1 gap-6 sm:gap-0">
         <div class="flex flex-col items-center">
-          <h1 class="font-['Allura'] text-5xl text-white drop-shadow-[0_2px_10px_rgba(255,255,255,0.3)]">
+          <h1 class="font-['Allura'] text-4xl sm:text-5xl text-white drop-shadow-[0_2px_10px_rgba(255,255,255,0.3)]">
             glace
           </h1>
           <div class="flex items-center gap-4 mt-2">
@@ -92,11 +91,6 @@ const socialLinks = [
 
 .animate-water-ripple {
   animation: water-ripple 5s cubic-bezier(0.25, 0.1, 0.25, 1) infinite;
-}
-
-/* 玻璃噪点增强细节 */
-:deep(.backdrop-blur-2xl) {
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");
 }
 
 h1 {

@@ -5,140 +5,104 @@
         root: 'relative overflow-hidden bg-background/50 backdrop-blur-sm dark:shadow-[inset_2px_2px_2px_0_rgba(255,255,255,0.2),2px_2px_2px_0_rgba(0,0,0,0.2)] shadow-[inset_2px_2px_2px_0_rgba(0,0,0,0.2),2px_2px_2px_0_rgba(255,255,255,0.2)] ring-0',
         body: 'p-0!'
       }"
-      class="rounded-2xl border-b border-black/10 dark:border-black shadow-lg"
+      class="rounded-2xl border-b border-black dark:border-black shadow-lg"
     >
-      <!-- 歌曲控件 -->
-      <div class="px-6 pt-4 flex justify-between items-center select-none">
-        <div class="flex items-center gap-4 overflow-hidden">
-          <p
-            class="text-[10px] text-(--text-color) font-bold tracking-widest truncate uppercase"
-          >
+      <div class="px-6 py-10 sm:pt-4 sm:pb-0 flex flex-col sm:flex-row justify-between items-center select-none gap-6 sm:gap-0">
+        <div class="flex flex-col sm:flex-row items-center gap-4 overflow-hidden">
+          <p class="text-[11px] sm:text-[10px] text-(--text-color) font-bold tracking-widest truncate uppercase text-center sm:text-left">
             {{ playerData.name }} <span class="mx-1 opacity-50">•</span>
             {{ playerData.artist }}
           </p>
           <div
-            class="flex items-center gap-2 opacity-0 group-hover/dashboard:opacity-100 transition-all duration-500"
+            class="flex items-center gap-6 sm:gap-2 opacity-100 sm:opacity-0 group-hover/dashboard:opacity-100 transition-all duration-500"
           >
             <UButton
               icon="i-heroicons-backward-16-solid"
-              aria-label="previousSong"
               variant="ghost"
-              size="xs"
+              size="sm"
               color="neutral"
-              class="p-0.5 hover:text-white"
+              class="sm:size-xs p-1 sm:p-0.5 hover:text-white"
               @click="player?.skipBack()"
             />
             <UButton
-              :icon="
-                playState
-                  ? 'i-heroicons-pause-16-solid'
-                  : 'i-heroicons-play-16-solid'
-              "
-              aria-label="togglePlay"
+              :icon="playState ? 'i-heroicons-pause-16-solid' : 'i-heroicons-play-16-solid'"
               variant="ghost"
-              size="xs"
+              size="sm"
               color="neutral"
-              class="p-0.5 hover:text-white"
+              class="sm:size-xs p-1 sm:p-0.5 hover:text-white"
               @click="player?.toggle()"
             />
             <UButton
               icon="i-heroicons-forward-16-solid"
-              aria-label="nextSong"
               variant="ghost"
-              size="xs"
+              size="sm"
               color="neutral"
-              class="p-0.5 hover:text-white"
+              class="sm:size-xs p-1 sm:p-0.5 hover:text-white"
               @click="player?.skipForward()"
             />
           </div>
         </div>
-        <div class="flex items-center gap-1.5 opacity-60">
+        <div class="hidden sm:flex items-center gap-1.5 opacity-60">
           <span class="text-[8px] font-bold tracking-[0.2em] uppercase">Aplayer</span>
-          <UIcon
-            name="i-heroicons-musical-note-16-solid"
-            class="text-[10px]"
-          />
+          <UIcon name="i-heroicons-musical-note-16-solid" class="text-[10px]" />
         </div>
       </div>
-      <!-- 歌词 -->
-      <div class="flex px-6 pb-6 pt-4 items-stretch justify-between gap-12">
-        <div class="flex-1 flex flex-col justify-between min-w-0 min-h-25">
-          <div class="relative flex items-center py-2">
-            <div
-              class="absolute left-0 w-px h-full bg-linear-to-b from-white/30 to-transparent"
-            />
-            <transition
-              name="lyric-fade"
-              mode="out-in"
-            >
+
+      <div class="flex flex-col sm:flex-row px-6 pb-12 sm:pb-6 pt-4 items-center sm:items-stretch justify-between gap-y-12 sm:gap-12">
+        <div class="flex-1 flex flex-col items-center sm:items-start justify-between min-w-0 sm:min-h-25 w-full">
+          <div class="relative flex items-center py-2 w-full justify-center sm:justify-start">
+            <div class="hidden sm:block absolute left-0 w-px h-full bg-linear-to-b from-white/30 to-transparent" />
+            <transition name="lyric-fade" mode="out-in">
               <p
                 :key="currentLyric"
-                class="pl-4 text-[11px] text-[#47FFE7] font-serif italic tracking-widest leading-relaxed"
+                class="sm:pl-4 text-[12px] sm:text-[11px] text-[#47FFE7] font-serif italic tracking-widest leading-relaxed text-center sm:text-left"
               >
                 {{ currentLyric || "纯音乐，请欣赏" }}
               </p>
             </transition>
           </div>
-          <!-- 天气 -->
-          <div class="flex items-center gap-4 mt-6">
+
+          <div class="flex items-center justify-center sm:justify-start gap-5 mt-8 sm:mt-6 w-full">
             <UIcon
               :name="weather.icon"
-              class="text-2xl text-amber-200/80 drop-shadow-[0_0_10px_rgba(252,211,77,0.4)]"
+              class="text-3xl sm:text-2xl text-amber-200/80 drop-shadow-[0_0_10px_rgba(252,211,77,0.4)]"
             />
-            <div class="flex flex-col">
+            <div class="flex flex-col items-center sm:items-start">
               <div class="flex items-baseline gap-2">
-                <span class="text-2xl font-light text-white/90">{{ weather.temp }}°</span>
-                <span
-                  class="text-[9px] text-white/20 uppercase tracking-[0.2em]"
-                >
+                <span class="text-3xl sm:text-2xl font-light text-white/90">{{ weather.temp }}°</span>
+                <span class="text-[10px] sm:text-[9px] text-white/20 uppercase tracking-[0.2em]">
                   {{ weather.description }} / {{ weather.city }}
                 </span>
               </div>
             </div>
           </div>
         </div>
-        <!-- Github贡献图 -->
-        <div class="shrink-0 flex flex-col justify-end items-end gap-2 pb-1">
-          <div class="grid grid-cols-12 gap-1.5 px-0.5">
+
+        <div class="shrink-0 flex flex-col justify-end items-center sm:items-end gap-4 sm:gap-2 pb-1 w-full sm:w-auto pt-8 sm:pt-0 border-t border-white/5 sm:border-0">
+          <div class="grid grid-cols-12 gap-2 sm:gap-1.5 px-0.5">
             <template v-if="contributionData.length > 0">
               <div
                 v-for="(day, index) in contributionData"
                 :key="index"
                 :title="`${day.date}: ${day.contributionCount} commits`"
                 :class="[
-                  'w-2.5 h-2.5 rounded-[2px] transition-all duration-700 hover:scale-125 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]',
+                  'w-3 h-3 sm:w-2.5 sm:h-2.5 rounded-[2px] transition-all duration-700 hover:scale-125 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]',
                   getLevelClass(day.contributionLevel)
                 ]"
               />
             </template>
             <template v-else>
-              <div
-                v-for="i in 48"
-                :key="i"
-                class="w-2.5 h-2.5 rounded-[2px] bg-white/5 animate-pulse"
-              />
+              <div v-for="i in 48" :key="i" class="w-3 h-3 sm:w-2.5 sm:h-2.5 rounded-[2px] bg-white/5 animate-pulse" />
             </template>
           </div>
-          <p
-            class="text-[8px] text-(--text-color) font-mono tracking-widest uppercase mt-1"
-          >
-            {{ githubUsername }} •
-            {{
-              contributionData.reduce(
-                (acc, cur) => acc + (cur.contributionCount || 0),
-                0
-              )
-            }}
-            Pushes in 48D
+          <p class="text-[9px] sm:text-[8px] text-(--text-color) font-mono tracking-widest uppercase mt-1 opacity-70">
+            {{ githubUsername }} • {{ contributionData.reduce((acc, cur) => acc + (cur.contributionCount || 0), 0) }} Pushes in 48D
           </p>
         </div>
       </div>
     </UCard>
 
-    <div
-      ref="playerDom"
-      class="hidden"
-    />
+    <div ref="playerDom" class="hidden" />
   </div>
 </template>
 
@@ -295,7 +259,6 @@ const fetchContributions = async () => {
     )
     const data = await res.json()
 
-    // 核心修正：1.展平数组 2.截取最后48个元素
     if (data.contributions) {
       const allDays = data.contributions.flat()
       contributionData.value = allDays.slice(-48)
@@ -313,7 +276,7 @@ const weather = ref({
   icon: 'i-heroicons-sun-20-solid'
 })
 
-// 1. 增强版天气映射：支持昼夜图标切换
+// 1. 天气映射：支持昼夜图标切换
 const weatherMap: Record<number, { text: string, dayIcon: string, nightIcon: string }> = {
   0: { text: '晴朗', dayIcon: 'i-heroicons-sun-20-solid', nightIcon: 'i-heroicons-moon-20-solid' },
   1: { text: '晴间多云', dayIcon: 'i-heroicons-sun-20-solid', nightIcon: 'i-heroicons-moon-20-solid' },
@@ -326,7 +289,7 @@ const weatherMap: Record<number, { text: string, dayIcon: string, nightIcon: str
 
 const fetchWeather = async () => {
   try {
-    // A. 直接访问定位 API (支持 CORS)
+    // 定位 API
     const geoRes = await fetch('https://get.geojs.io/v1/ip/geo.json')
     const geoData = await geoRes.json()
 
@@ -334,7 +297,7 @@ const fetchWeather = async () => {
     const lon = parseFloat(geoData.longitude)
     weather.value.city = geoData.city || '未知'
 
-    // B. 直接访问天气 API (根据你提供的 JSON 结构)
+    // 天气 API
     const weatherRes = await fetch(
       `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`
     )
@@ -346,7 +309,7 @@ const fetchWeather = async () => {
       // 根据 code 获取基础信息
       const condition = weatherMap[weathercode] || { text: '未知', dayIcon: 'i-heroicons-sun-20-solid', nightIcon: 'i-heroicons-moon-20-solid' }
 
-      // C. 细节：根据昼夜状态切换图标
+      // 根据昼夜状态切换图标
       weather.value.temp = Math.round(temperature)
       weather.value.description = condition.text
       weather.value.icon = is_day === 1 ? condition.dayIcon : condition.nightIcon

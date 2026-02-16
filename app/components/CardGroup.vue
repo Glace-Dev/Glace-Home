@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full max-w-6xl mx-auto pt-8">
+  <div class="w-full max-w-6xl mx-auto sm:pt-8">
     <div
       class="flex items-center space-x-2 mb-6 text-zinc-800 dark:text-white/90 transition-colors duration-300"
     >
@@ -34,11 +34,11 @@
             <UCard
               :disabled="!item.enable"
               :class="item.enable
-                ? 'group available h-32 cursor-pointer transition-all duration-300 rounded-2xl bg-background/50 backdrop-blur-sm dark:shadow-[inset_2px_2px_2px_0_rgba(255,255,255,0.2),2px_2px_2px_0_rgba(0,0,0,0.2)] shadow-[inset_2px_2px_2px_0_rgba(0,0,0,0.2),2px_2px_2px_0_rgba(255,255,255,0.2)] ring-0 transform hover:-translate-y-1 hover:-translate-x-1 text-center'
-                : 'group card-unavailable relative h-32 cursor-not-allowed transition-all duration-300 rounded-2xl bg-background/50 backdrop-blur-sm dark:shadow-[inset_2px_2px_2px_0_rgba(255,255,255,0.2),2px_2px_2px_0_rgba(0,0,0,0.2)] shadow-[inset_2px_2px_2px_0_rgba(0,0,0,0.2),2px_2px_2px_0_rgba(255,255,255,0.2)] ring-0 text-center'"
+                ? 'group available h-32 cursor-pointer transition-all duration-300 rounded-2xl bg-background/50 backdrop-blur-sm dark:shadow-[inset_2px_2px_2px_0_rgba(255,255,255,0.2),2px_2px_2px_0_rgba(0,0,0,0.2)] shadow-[inset_2px_2px_2px_0_rgba(0,0,0,0.2),2px_2px_2px_0_rgba(255,255,255,0.2)] border-b border-black ring-0 transform hover:-translate-y-1 hover:-translate-x-1 text-center'
+                : 'group card-unavailable relative h-32 cursor-not-allowed transition-all duration-300 rounded-2xl bg-background/50 backdrop-blur-sm dark:shadow-[inset_2px_2px_2px_0_rgba(255,255,255,0.2),2px_2px_2px_0_rgba(0,0,0,0.2)] shadow-[inset_2px_2px_2px_0_rgba(0,0,0,0.2),2px_2px_2px_0_rgba(255,255,255,0.2)] border-b border-black ring-0 text-center'"
               :ui="{
                 root: 'relative overflow-hidden',
-                body: 'flex flex-col items-center justify-center gap-2'
+                body: 'flex flex-col items-center justify-center gap-2 '
               }"
             >
               <div

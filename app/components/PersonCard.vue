@@ -1,8 +1,8 @@
 <template>
-  <div class="w-full h-full pt-12 flex flex-col gap-8 animate-fade-in">
+  <div class="w-full h-full pt-12 flex flex-col items-center gap-8 animate-fade-in">
     <PerBoard />
 
-    <IntegratedDashboard />
+    <IntegratedDashboard class="hidden sm:block" />
   </div>
 </template>
 

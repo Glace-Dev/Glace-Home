@@ -1,5 +1,5 @@
 <template>
-  <div class="grid grid-cols-1 grid-rows-5 w-full h-full pt-10">
+  <div class="grid grid-cols-1 grid-rows-5 w-full h-full sm:pt-10">
     <div class="row-span-1 hidden sm:block">
       <UCard
         :ui="{

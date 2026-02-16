@@ -3,14 +3,14 @@
     <!-- 遮罩层 -->
     <div class="fixed inset-0 vignette-overlay backdrop-saturate-150 z-0" />
     <UContainer
-      class="min-h-screen min-w-screen mx-auto flex flex-col pt-3 relative z-10"
+      class="min-h-screen min-w-screen mx-auto flex flex-col pt-3 relative"
     >
       <!-- 页眉 -->
-      <div class="w-full z-50">
+      <div class="w-full">
         <AppHeader />
       </div>
       <UMain
-        class="flex-1 grid lg:grid-cols-11 items-center gap-[5%] px-5 min-h-0"
+        class="flex-1 grid lg:grid-cols-11 items-center gap-[5%] px-4 min-h-0"
       >
         <!-- 左侧：PerBoard -->
         <div
@@ -21,7 +21,7 @@
 
         <!-- 右侧：CardsBoard -->
         <div
-          class="lg:col-span-6 h-full flex justify-center items-center min-h-0 overflow-hidden"
+          class="lg:col-span-6 h-full flex justify-center items-center overflow-hidden"
         >
           <CardsBoard />
         </div>
@@ -147,21 +147,5 @@ onMounted(async () => {
 
 .dark .vignette-overlay {
   --bg-gradient-home: 20, 20, 20;
-}
-
-.fade-slide {
-  &-enter-active, &-leave-active {
-    transition: opacity 0.5s ease, transform 0.5s ease;
-  }
-
-  &-enter-from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-
-  &-leave-to {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
 }
 </style>
