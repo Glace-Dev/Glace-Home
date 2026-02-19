@@ -1,6 +1,9 @@
 <template>
   <UHeader
     class="rounded-full dark:shadow-[inset_0_2px_2px_0_rgba(255,255,255,0.1)] shadow-[inset_0_2px_2px_0_rgba(0,0,0,0.1)] mx-4"
+    :toggle="{
+      class: 'hidden'
+    }"
   >
     <template #left>
       <div class="flex items-center gap-3">
