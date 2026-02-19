@@ -1,27 +1,25 @@
 <template>
   <div class="w-full max-w-6xl mx-auto sm:pt-8">
-    <div
-      class="flex items-center space-x-2 mb-6 text-zinc-800 dark:text-white/90 transition-colors duration-300"
-    >
-      <UIcon
-        name="i-heroicons-link"
-        class="w-6 h-6 rotate-45"
-      />
-      <h2 class="text-xl font-medium tracking-wider">
-        网站列表
-      </h2>
+    <div class="flex items-center space-x-2 mb-6 text-zinc-800 dark:text-white/90 transition-colors duration-300">
+      <UIcon name="i-heroicons-link" class="w-6 h-6 rotate-45" />
+      <h2 class="text-xl font-medium tracking-wider">网站列表</h2>
     </div>
 
     <div
       ref="scrollContainer"
-      class="flex overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar"
+      class="flex overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar touch-pan-y"
+      :class="{ 'dragging': isDragging }"
       @scroll="handleScroll"
+      @pointerdown="onPointerDown"
+      @pointermove="onPointerMove"
+      @pointerup="onPointerUp"
+      @pointercancel="onPointerUp"
     >
       <div
-        v-for="(page, pIndex) in pages"
-        :key="pIndex"
-        class="min-w-full grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-6 snap-center"
-      >
+  v-for="(page, pIndex) in pages"
+  :key="pIndex"
+  class="min-w-full grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-6 snap-center overflow-hidden"
+>
         <div
           v-for="item in page"
           :key="item.name"
@@ -29,34 +27,32 @@
         >
           <component
             :is="item.enable ? 'a' : 'div'"
-            v-bind="item.enable ? { href: item.url, target: '_blank', rel: 'noopener noreferrer', class: 'no-underline' } : {}"
+            v-bind="getLinkProps(item)"
+            @click="handleLinkClick"
           >
             <UCard
               :disabled="!item.enable"
-              :class="item.enable
-                ? 'group available h-32 cursor-pointer transition-all duration-300 rounded-2xl bg-background/50 backdrop-blur-sm dark:shadow-[inset_2px_2px_2px_0_rgba(255,255,255,0.2),2px_2px_2px_0_rgba(0,0,0,0.2)] shadow-[inset_2px_2px_2px_0_rgba(0,0,0,0.2),2px_2px_2px_0_rgba(255,255,255,0.2)] border-b border-black ring-0 transform hover:-translate-y-1 hover:-translate-x-1 text-center'
-                : 'group card-unavailable relative h-32 cursor-not-allowed transition-all duration-300 rounded-2xl bg-background/50 backdrop-blur-sm dark:shadow-[inset_2px_2px_2px_0_rgba(255,255,255,0.2),2px_2px_2px_0_rgba(0,0,0,0.2)] shadow-[inset_2px_2px_2px_0_rgba(0,0,0,0.2),2px_2px_2px_0_rgba(255,255,255,0.2)] border-b border-black ring-0 text-center'"
+              :class="[
+                'group h-32 text-center transition-all duration-300 rounded-2xl bg-background/50 backdrop-blur-sm border-b border-black ring-0 shadow-[inset_2px_2px_2px_0_rgba(0,0,0,0.2),2px_2px_2px_0_rgba(255,255,255,0.2)] dark:shadow-[inset_2px_2px_2px_0_rgba(255,255,255,0.2),2px_2px_2px_0_rgba(0,0,0,0.2)]',
+                item.enable ? 'available cursor-pointer transform hover:-translate-y-1 hover:-translate-x-1' : 'card-unavailable cursor-not-allowed'
+              ]"
               :ui="{
                 root: 'relative overflow-hidden',
-                body: 'flex flex-col items-center justify-center gap-2 '
+                body: 'flex flex-col items-center justify-center gap-2'
               }"
             >
               <div
                 v-if="!item.enable"
                 class="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none"
               >
-                <div
-                  class="absolute -top-[50%] -right-[50%] w-full h-full bg-linear-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-2xl"
-                />
+                <div class="absolute -top-[50%] -right-[50%] w-full h-full bg-linear-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-2xl" />
               </div>
 
               <UIcon
                 :name="item.icon"
                 class="w-10 h-10 transition-colors duration-300 text-zinc-800 dark:text-white"
               />
-              <span
-                class="text-xl font-normal tracking-widest transition-colors duration-300 text-zinc-800 dark:text-white/90"
-              >
+              <span class="text-xl font-normal tracking-widest transition-colors duration-300 text-zinc-800 dark:text-white/90">
                 {{ item.name }}
               </span>
 
@@ -86,7 +82,9 @@
 </template>
 
 <script setup lang="ts">
-// 链接配置接口
+/**
+ * 1. 类型定义
+ */
 interface LinkItem {
   name: string
   icon: string
@@ -94,172 +92,147 @@ interface LinkItem {
   enable: boolean
 }
 
-// 统一管理所有链接配置
-const allLinks: LinkItem[] = [
-  {
-    name: '博客',
-    icon: 'i-heroicons-rss-20-solid',
-    url: 'https://blog.glace.top',
-    enable: true
-  },
-  {
-    name: '网址集',
-    icon: 'i-heroicons-book-open-20-solid',
-    url: 'https://res.glace.top',
-    enable: true
-  },
-  {
-    name: '网盘',
-    icon: 'i-heroicons-cloud-20-solid',
-    url: '',
-    enable: false
-  },
-  {
-    name: '音乐',
-    icon: 'i-heroicons-musical-note-20-solid',
-    url: '',
-    enable: false
-  },
-  {
-    name: '起始页',
-    icon: 'i-heroicons-home-modern-20-solid',
-    url: '',
-    enable: false
-  },
-  {
-    name: '今日热榜',
-    icon: 'i-heroicons-fire-20-solid',
-    url: '',
-    enable: false
-  },
-  {
-    name: '更多内容',
-    icon: 'i-heroicons-ellipsis-horizontal',
-    url: '',
-    enable: false
-  },
-  {
-    name: '设置',
-    icon: 'i-heroicons-cog-6-tooth',
-    url: '',
-    enable: false
-  },
-  {
-    name: '反馈',
-    icon: 'i-heroicons-chat-bubble-left-right',
-    url: '',
-    enable: false
-  }
+/**
+ * 2. 静态配置 (建议在生产环境中放入 defineAppConfig 或 content)
+ */
+const ALL_LINKS: LinkItem[] = [
+  { name: '博客', icon: 'i-heroicons-rss-20-solid', url: 'https://blog.glace.top', enable: true },
+  { name: '网址集', icon: 'i-heroicons-book-open-20-solid', url: 'https://res.glace.top', enable: true },
+  { name: '网盘', icon: 'i-heroicons-cloud-20-solid', url: '', enable: false },
+  { name: '音乐', icon: 'i-heroicons-musical-note-20-solid', url: '', enable: false },
+  { name: '起始页', icon: 'i-heroicons-home-modern-20-solid', url: '', enable: false },
+  { name: '今日热榜', icon: 'i-heroicons-fire-20-solid', url: '', enable: false },
+  { name: '更多内容', icon: 'i-heroicons-ellipsis-horizontal', url: '', enable: false },
+  { name: '设置', icon: 'i-heroicons-cog-6-tooth', url: '', enable: false },
+  { name: '反馈', icon: 'i-heroicons-chat-bubble-left-right', url: '', enable: false }
 ]
 
+/**
+ * 3. 响应式状态 & 引用
+ */
 const scrollContainer = ref<HTMLElement | null>(null)
 const activeIndex = ref(0)
-const isMobile = ref(false)
+const isDragging = ref(false)
 
-// 数组分块函数
-function chunkArray<T>(arr: T[], size: number): T[][] {
-  const result: T[][] = []
-  for (let i = 0; i < arr.length; i += size) {
-    result.push(arr.slice(i, i + size))
+// 拖拽逻辑相关私有变量
+let startX = 0
+let startScrollLeft = 0
+let dragDistance = 0
+let lastSamples: { x: number; t: number }[] = []
+
+/**
+ * 4. 屏幕适配 (Nuxt 方式优化)
+ * 使用 VueUse 的 useBreakpoints (Nuxt UI 已内置) 或简单的响应式监听
+ */
+const isMobile = ref(false)
+const updateBreakpoint = () => {
+  if (import.meta.client) {
+    isMobile.value = window.innerWidth < 640
   }
-  return result
 }
 
-// 自动计算分页内容
+/**
+ * 5. 计算属性
+ */
 const pages = computed(() => {
   const chunkSize = isMobile.value ? 4 : 6
-  return chunkArray(allLinks, chunkSize)
+  const result: LinkItem[][] = []
+  for (let i = 0; i < ALL_LINKS.length; i += chunkSize) {
+    result.push(ALL_LINKS.slice(i, i + chunkSize))
+  }
+  return result
 })
 
-// 更新响应式断点
-const updateBreakpoint = () => {
-  if (typeof window !== 'undefined') {
-    isMobile.value = window.matchMedia('(max-width: 639px)').matches
+/**
+ * 6. 辅助函数
+ */
+const getLinkProps = (item: LinkItem) => {
+  if (!item.enable) return {}
+  return {
+    href: item.url,
+    target: '_blank',
+    rel: 'noopener noreferrer',
+    class: 'no-underline'
   }
 }
 
-// 处理滚动监听
-const handleScroll = (event: Event) => {
-  const el = event.target as HTMLElement
-  activeIndex.value = Math.round(el.scrollLeft / el.clientWidth)
-}
-
-// 点击指示器跳转
 const scrollToPage = (index: number) => {
-  if (scrollContainer.value) {
-    scrollContainer.value.scrollTo({
-      left: index * scrollContainer.value.clientWidth,
+  const el = scrollContainer.value
+  if (el) {
+    el.scrollTo({
+      left: index * el.clientWidth,
       behavior: 'smooth'
     })
   }
 }
 
-// 拖拽翻页逻辑
-let isDown = false
-let startX = 0
-let startScrollLeft = 0
-let lastSamples: Array<{ x: number, t: number }> = []
+/**
+ * 7. 事件处理逻辑
+ */
+const handleScroll = (e: Event) => {
+  const el = e.target as HTMLElement
+  activeIndex.value = Math.round(el.scrollLeft / el.clientWidth)
+}
 
+const handleLinkClick = (e: MouseEvent) => {
+  // 拖拽阈值判断，防止误触
+  if (dragDistance > 10) {
+    e.preventDefault()
+    e.stopPropagation()
+  }
+}
+
+// 拖拽逻辑封装
 const onPointerDown = (e: PointerEvent) => {
   const el = scrollContainer.value
   if (!el) return
-  const target = e.target as HTMLElement | null
-  if (target?.closest('a,button,input,[role="button"]')) return
-
-  isDown = true
-  try {
-    el.setPointerCapture(e.pointerId)
-  } catch {}
+  
+  isDragging.value = true
+  dragDistance = 0
   startX = e.clientX
   startScrollLeft = el.scrollLeft
   lastSamples = [{ x: e.clientX, t: performance.now() }]
-  el.classList.add('dragging')
+  
+  try { el.setPointerCapture(e.pointerId) } catch {}
 }
 
 const onPointerMove = (e: PointerEvent) => {
-  if (!isDown || !scrollContainer.value) return
+  if (!isDragging.value || !scrollContainer.value) return
+  
   const dx = e.clientX - startX
+  dragDistance = Math.abs(dx)
   scrollContainer.value.scrollLeft = startScrollLeft - dx
+  
   lastSamples.push({ x: e.clientX, t: performance.now() })
   if (lastSamples.length > 6) lastSamples.shift()
 }
 
-const endDrag = (e?: PointerEvent) => {
+const onPointerUp = (e: PointerEvent) => {
   const el = scrollContainer.value
-  if (!el || !isDown) return
+  if (!el || !isDragging.value) return
 
-  const last = lastSamples[lastSamples.length - 1] || {
-    x: startX,
-    t: performance.now()
-  }
+  // 惯性计算
+  const last = lastSamples[lastSamples.length - 1] || { x: startX, t: performance.now() }
   const first = lastSamples[0] || last
   const dt = Math.max(1, last.t - first.t)
   const scrollV = -(last.x - first.x) / dt
   const momentum = scrollV * 300
 
-  const pageW = el.clientWidth
-  const targetPage = Math.round((el.scrollLeft + momentum) / pageW)
+  const targetPage = Math.round((el.scrollLeft + momentum) / el.clientWidth)
   const clamped = Math.max(0, Math.min(pages.value.length - 1, targetPage))
 
-  el.scrollTo({ left: clamped * pageW, behavior: 'smooth' })
-  isDown = false
-  try {
-    if (e) el.releasePointerCapture(e.pointerId)
-  } catch {}
-  el.classList.remove('dragging')
+  scrollToPage(clamped)
+  
+  isDragging.value = false
+  try { el.releasePointerCapture(e.pointerId) } catch {}
 }
 
+/**
+ * 8. 生命周期
+ */
 onMounted(() => {
   updateBreakpoint()
   window.addEventListener('resize', updateBreakpoint)
-
-  const el = scrollContainer.value
-  if (el) {
-    el.addEventListener('pointerdown', onPointerDown)
-    el.addEventListener('pointermove', onPointerMove)
-    el.addEventListener('pointerup', endDrag)
-    el.addEventListener('pointercancel', endDrag)
-  }
 })
 
 onUnmounted(() => {
@@ -267,33 +240,37 @@ onUnmounted(() => {
 })
 </script>
 
-<style scoped lang="sass">
-.no-scrollbar
-  -ms-overflow-style: none
-  scrollbar-width: none
-  touch-action: pan-y
+<style scoped lang="scss">
+.no-scrollbar{
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  // 确保在移动端不会触发浏览器的回弹，交给我们的逻辑处理
+  overscroll-behavior-x: contain ;
 
-  &::-webkit-scrollbar
-    display: none
-
-.dragging
-  cursor: grabbing !important
-  user-select: none
-  -webkit-user-select: none
-  -ms-user-select: none
-
-.card-unavailable
-  .card-badge
-    opacity: 0
-
-  .w-10, span
-    transition: color 0.2s, opacity 0.2s
-
-  &:hover
-    .card-badge
-      opacity: 1
-
-    .w-10, span
-      color: rgba(255, 255, 255, 0.4) !important
-      opacity: 0.6
+  &::-webkit-scrollbar{
+    display: none;
+  }
+}
+.dragging{
+  cursor: grabbing !important;
+  user-select: none;
+  scroll-snap-type: none; // 拖拽时暂时关闭 snap 以保证顺滑
+}
+.card-unavailable{
+  .card-badge{
+    opacity: 0;
+  }
+  .w-10, span{
+    transition: color 0.2s, opacity 0.2s;
+  }
+  &:hover{
+    .card-badge{
+      opacity: 1;
+    }
+    .w-10, span{
+      color: rgba(255, 255, 255, 0.4) !important;
+      opacity: 0.6;
+    }
+  }
+}
 </style>
