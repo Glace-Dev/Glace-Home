@@ -34,12 +34,12 @@
       <div class="flex-1 flex flex-col p-6 sm:p-8 items-center justify-between bg-white/1 gap-6 sm:gap-0">
         <div class="flex flex-col items-center">
           <h1 class="font-['Allura'] text-4xl sm:text-5xl text-white drop-shadow-[0_2px_10px_rgba(255,255,255,0.3)]">
-            glace
+            {{ displayName }}
           </h1>
           <div class="flex items-center gap-4 mt-2">
             <span class="h-px w-6 bg-white/60" />
             <p class="text-[10px] tracking-[0.6em] font-light uppercase italic">
-              Developer
+              {{ occupation }}
             </p>
             <span class="h-px w-6 bg-white/60" />
           </div>
@@ -69,11 +69,16 @@
 </template>
 
 <script setup lang="ts">
+import userConfig from '../../config'
+
 const socialLinks = [
-  { icon: 'i-simple-icons-github', url: 'https://github.com/PuppetRuler' },
-  { icon: 'i-ph-paper-plane-tilt-bold', url: 'https://t.me/sixty_three' },
-  { icon: 'i-heroicons-envelope-20-solid', url: 'mailto:ziyelixiang@gmail.com' }
+  { icon: 'i-simple-icons-github', url: userConfig.social?.githubProfile || '' },
+  { icon: 'i-ph-paper-plane-tilt-bold', url: userConfig.social?.telegram || '' },
+  { icon: 'i-heroicons-envelope-20-solid', url: userConfig.social?.email ? `mailto:${userConfig.social.email}` : '' }
 ]
+
+const displayName = userConfig.profile?.name || 'glace'
+const occupation = userConfig.profile?.occupation || 'Developer'
 </script>
 
 <style scoped lang="scss">

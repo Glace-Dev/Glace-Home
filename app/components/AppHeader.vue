@@ -16,7 +16,7 @@
         <h1
           class="text-xl sm:text-3xl pl-2 font-bold tracking-wide transition-all duration-300 font-['Allura'] bg-clip-text text-transparent bg-linear-to-br from-zinc-900 via-zinc-700 to-zinc-400 dark:from-white dark:via-white/80 dark:to-white/20"
         >
-          glace's Home
+          {{ headerTitle }}
         </h1>
       </div>
     </template>
@@ -24,7 +24,7 @@
       <UButton
         icon="i-simple-icons-github"
         aria-label="GitHub"
-        to="https://github.com/PuppetRuler"
+        :to="githubProfile"
         target="_blank"
         variant="ghost"
         color="neutral"
@@ -35,7 +35,12 @@
   </UHeader>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import userConfig from '../../config'
+
+const headerTitle = userConfig.site?.title || "glace's Home"
+const githubProfile = userConfig.social?.githubProfile || 'https://github.com/Glace-Dev'
+</script>
 
 <style lang="scss">
 button[aria-aria-label="Open menu"] {

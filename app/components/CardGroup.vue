@@ -83,7 +83,7 @@
 
 <script setup lang="ts">
 /**
- * 1. 类型定义
+ * 1. 类型定义与配置
  */
 interface LinkItem {
   name: string
@@ -91,49 +91,31 @@ interface LinkItem {
   url?: string
   enable: boolean
 }
+import userConfig from '../../config'
+
+const ALL_LINKS: LinkItem[] = (userConfig.links || []) as LinkItem[]
 
 /**
- * 2. 静态配置 (建议在生产环境中放入 defineAppConfig 或 content)
- */
-const ALL_LINKS: LinkItem[] = [
-  { name: '博客', icon: 'i-heroicons-rss-20-solid', url: 'https://blog.glace.top', enable: true },
-  { name: '网址集', icon: 'i-heroicons-book-open-20-solid', url: 'https://res.glace.top', enable: true },
-  { name: '网盘', icon: 'i-heroicons-cloud-20-solid', url: '', enable: false },
-  { name: '音乐', icon: 'i-heroicons-musical-note-20-solid', url: '', enable: false },
-  { name: '起始页', icon: 'i-heroicons-home-modern-20-solid', url: '', enable: false },
-  { name: '今日热榜', icon: 'i-heroicons-fire-20-solid', url: '', enable: false },
-  { name: '更多内容', icon: 'i-heroicons-ellipsis-horizontal', url: '', enable: false },
-  { name: '设置', icon: 'i-heroicons-cog-6-tooth', url: '', enable: false },
-  { name: '反馈', icon: 'i-heroicons-chat-bubble-left-right', url: '', enable: false }
-]
-
-/**
- * 3. 响应式状态 & 引用
+ * 2. 响应式状态
  */
 const scrollContainer = ref<HTMLElement | null>(null)
 const activeIndex = ref(0)
-const isDragging = ref(false)
+const isDragging = ref(false) // 只有真正滑动时才为 true
+const isMobile = ref(false)
 
-// 拖拽逻辑相关私有变量
-let startX = 0
-let startScrollLeft = 0
-let dragDistance = 0
+// 内部逻辑变量 (非响应式)
+let isPressed = false      // 鼠标/手指是否按下
+let startX = 0             // 按下时的坐标
+let startScrollLeft = 0    // 按下时的滚动位置
 let lastSamples: { x: number; t: number }[] = []
 
 /**
- * 4. 屏幕适配 (Nuxt 方式优化)
- * 使用 VueUse 的 useBreakpoints (Nuxt UI 已内置) 或简单的响应式监听
+ * 3. 基础功能逻辑
  */
-const isMobile = ref(false)
 const updateBreakpoint = () => {
-  if (import.meta.client) {
-    isMobile.value = window.innerWidth < 640
-  }
+  if (import.meta.client) isMobile.value = window.innerWidth < 640
 }
 
-/**
- * 5. 计算属性
- */
 const pages = computed(() => {
   const chunkSize = isMobile.value ? 4 : 6
   const result: LinkItem[][] = []
@@ -143,92 +125,112 @@ const pages = computed(() => {
   return result
 })
 
-/**
- * 6. 辅助函数
- */
-const getLinkProps = (item: LinkItem) => {
-  if (!item.enable) return {}
-  return {
-    href: item.url,
-    target: '_blank',
-    rel: 'noopener noreferrer',
-    class: 'no-underline'
-  }
-}
-
 const scrollToPage = (index: number) => {
   const el = scrollContainer.value
-  if (el) {
-    el.scrollTo({
-      left: index * el.clientWidth,
-      behavior: 'smooth'
-    })
+  if (!el) return
+  el.scrollTo({
+    left: index * el.clientWidth,
+    behavior: 'smooth'
+  })
+}
+
+const handleScroll = (e: Event) => {
+  const el = e.target as HTMLElement
+  // 仅在非拖拽状态下（如点击页码点）同步索引
+  if (!isPressed) {
+    activeIndex.value = Math.round(el.scrollLeft / el.clientWidth)
   }
 }
 
 /**
- * 7. 事件处理逻辑
+ * 4. 核心交互逻辑 (拖拽与点击兼容)
  */
-const handleScroll = (e: Event) => {
-  const el = e.target as HTMLElement
-  activeIndex.value = Math.round(el.scrollLeft / el.clientWidth)
-}
-
-const handleLinkClick = (e: MouseEvent) => {
-  // 拖拽阈值判断，防止误触
-  if (dragDistance > 10) {
-    e.preventDefault()
-    e.stopPropagation()
-  }
-}
-
-// 拖拽逻辑封装
 const onPointerDown = (e: PointerEvent) => {
+  // 只响应主键（左键）
+  if (e.button !== 0) return
   const el = scrollContainer.value
   if (!el) return
-  
-  isDragging.value = true
-  dragDistance = 0
+
+  isPressed = true
+  isDragging.value = false // 初始重置
   startX = e.clientX
   startScrollLeft = el.scrollLeft
   lastSamples = [{ x: e.clientX, t: performance.now() }]
-  
-  try { el.setPointerCapture(e.pointerId) } catch {}
 }
 
 const onPointerMove = (e: PointerEvent) => {
-  if (!isDragging.value || !scrollContainer.value) return
-  
+  if (!isPressed) return
+
   const dx = e.clientX - startX
-  dragDistance = Math.abs(dx)
-  scrollContainer.value.scrollLeft = startScrollLeft - dx
   
-  lastSamples.push({ x: e.clientX, t: performance.now() })
-  if (lastSamples.length > 6) lastSamples.shift()
+  // 阈值判定：移动超过 10px 才确认为“拖拽”
+  if (!isDragging.value && Math.abs(dx) > 10) {
+    isDragging.value = true
+    // 确认为拖拽后，接管指针，防止触发子元素的 click 和系统默认行为
+    scrollContainer.value?.setPointerCapture(e.pointerId)
+  }
+
+  if (isDragging.value && scrollContainer.value) {
+    scrollContainer.value.scrollLeft = startScrollLeft - dx
+    
+    // 记录样本用于惯性计算
+    lastSamples.push({ x: e.clientX, t: performance.now() })
+    if (lastSamples.length > 6) lastSamples.shift()
+  }
 }
 
 const onPointerUp = (e: PointerEvent) => {
+  if (!isPressed) return
   const el = scrollContainer.value
-  if (!el || !isDragging.value) return
-
-  // 惯性计算
-  const last = lastSamples[lastSamples.length - 1] || { x: startX, t: performance.now() }
-  const first = lastSamples[0] || last
-  const dt = Math.max(1, last.t - first.t)
-  const scrollV = -(last.x - first.x) / dt
-  const momentum = scrollV * 300
-
-  const targetPage = Math.round((el.scrollLeft + momentum) / el.clientWidth)
-  const clamped = Math.max(0, Math.min(pages.value.length - 1, targetPage))
-
-  scrollToPage(clamped)
   
-  isDragging.value = false
-  try { el.releasePointerCapture(e.pointerId) } catch {}
+  if (isDragging.value && el) {
+    // 计算惯性终点
+    const last = lastSamples[lastSamples.length - 1]
+    const first = lastSamples[0]
+    const dt = Math.max(1, last!.t - first!.t)
+    const velocity = (last!.x - first!.x) / dt
+    const momentum = velocity * 200 // 惯性系数
+
+    const targetPage = Math.round((el.scrollLeft - momentum) / el.clientWidth)
+    const clamped = Math.max(0, Math.min(pages.value.length - 1, targetPage))
+    scrollToPage(clamped)
+    activeIndex.value = clamped
+    
+    try { el.releasePointerCapture(e.pointerId) } catch {}
+  }
+
+  // 延迟重置 isDragging，确保 handleLinkClick 能拿到正确的状态
+  isPressed = false
+  setTimeout(() => {
+    isDragging.value = false
+  }, 0)
+}
+
+const handleLinkClick = (item: LinkItem, e: MouseEvent) => {
+  // 如果当前是拖拽结束后的那一刻，拦截跳转
+  if (isDragging.value) {
+    e.preventDefault()
+    e.stopPropagation()
+    return
+  }
+  
+  // 逻辑处理：如果不允许跳转，拦截默认行为
+  if (!item.enable || !item.url) {
+    e.preventDefault()
+  }
+}
+
+const getLinkProps = (item: LinkItem) => {
+  if (!item.enable || !item.url) return { role: 'button' }
+  return {
+    href: item.url,
+    target: '_blank',
+    rel: 'noopener noreferrer'
+  }
 }
 
 /**
- * 8. 生命周期
+ * 5. 生命周期
  */
 onMounted(() => {
   updateBreakpoint()
@@ -244,8 +246,7 @@ onUnmounted(() => {
 .no-scrollbar{
   -ms-overflow-style: none;
   scrollbar-width: none;
-  // 确保在移动端不会触发浏览器的回弹，交给我们的逻辑处理
-  overscroll-behavior-x: contain ;
+  overscroll-behavior-x: contain ; // 确保在移动端不会触发浏览器的回弹
 
   &::-webkit-scrollbar{
     display: none;

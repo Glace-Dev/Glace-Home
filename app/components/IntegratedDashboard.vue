@@ -126,24 +126,21 @@ const playerShow = usePlayerShow()
 const playerVolume = usePlayerVolume()
 const playerData = usePlayerData()
 
+import userConfig from '../../config'
+
 // 本地渲染状态
 const currentLyric = ref('已准备好音乐ヾ(≧▽≦*)o')
 const playerDom = ref<HTMLElement | null>(null)
 const player = ref<any>(null) // APlayer 实例
 
-// 歌曲配置
-const musicConfig = {
-  id: '14353620803',
-  server: 'netease',
-  type: 'playlist',
-  enable: true
-}
+// 歌曲配置（来自 config）
+const musicConfig = userConfig.musicConfig || { id: '', server: 'netease', type: 'playlist', enable: false }
 
 // --- 获取音乐列表 ---
 const getMusicList = async (
   id: string,
-  server = 'netease',
-  type = 'playlist'
+  server = userConfig.musicConfig?.server || 'netease',
+  type = userConfig.musicConfig?.type || 'playlist'
 ) => {
   const result = await fetch(
     `https://metingjsapi.vercel.app/api?server=${server}&type=${type}&id=${id}`
@@ -251,7 +248,7 @@ const loadMusicData = async () => {
 watch(playerVolume, val => player.value?.volume(val, true))
 
 // --- 贡献图逻辑 ---
-const githubUsername = 'Glace-Dev'
+const githubUsername = userConfig.social?.githubUsername || 'Glace-Dev'
 const contributionData = ref<any[]>([])
 
 const getLevelClass = (level: string) => {
@@ -302,13 +299,44 @@ const weatherMap: Record<number, { text: string, dayIcon: string, nightIcon: str
 
 const fetchWeather = async () => {
   try {
-    // 定位 API
-    const geoRes = await fetch('https://get.geojs.io/v1/ip/geo.json')
-    const geoData = await geoRes.json()
+    // 定位 API — 优先使用 ipapi.co，失败回退到 ipwho.is
+    let lat = 0
+    let lon = 0
+    try {
+      const providers = [
+        'https://ipapi.co/json/',
+        'https://ipwho.is/json'
+      ]
+      let geoData: any = null
 
-    const lat = parseFloat(geoData.latitude)
-    const lon = parseFloat(geoData.longitude)
-    weather.value.city = geoData.city || '未知'
+      for (const url of providers) {
+        try {
+          const res = await fetch(url)
+          if (!res.ok) continue
+          const data = await res.json()
+          const maybeLat = data.latitude ?? data.lat ?? null
+          const maybeLon = data.longitude ?? data.lon ?? data.long ?? null
+          if (maybeLat != null && maybeLon != null) {
+            geoData = data
+            lat = parseFloat(maybeLat)
+            lon = parseFloat(maybeLon)
+            weather.value.city = data.city || data.region || '未知'
+            break
+          }
+        } catch (e) {
+          // 尝试下一个提供者
+          continue
+        }
+      }
+
+      if (!geoData) {
+        throw new Error('无法从定位服务获取坐标')
+      }
+    } catch (err) {
+      console.warn('[Geo Service Warning]:', err)
+      weather.value.city = '未知'
+      throw err
+    }
 
     // 天气 API
     const weatherRes = await fetch(
