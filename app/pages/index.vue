@@ -1,27 +1,27 @@
 <template>
-  <div class="container min-h-screen min-w-screen bg-img">
+  <div class="min-h-screen w-full overflow-x-hidden bg-img">
     <!-- 遮罩层 -->
     <div class="fixed inset-0 vignette-overlay backdrop-saturate-150 z-0" />
     <UContainer
-      class="min-h-screen min-w-screen mx-auto flex flex-col pt-3 relative"
+      class="min-h-screen mx-auto flex flex-col pt-3 relative"
     >
       <!-- 页眉 -->
       <div class="w-full">
         <AppHeader />
       </div>
       <UMain
-        class="flex-1 grid lg:grid-cols-11 items-center gap-[5%] px-4 min-h-0"
+        class="flex-1 grid grid-cols-1 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] items-center gap-x-10 xl:gap-x-14 2xl:gap-x-16 px-4 min-h-0"
       >
         <!-- 左侧：PerBoard -->
         <div
-          class="lg:col-span-5 mt-4 sm:mt-0 flex items-center justify-center h-full min-h-40"
+          class="mt-4 flex min-h-40 min-w-0 items-center justify-center sm:mt-0 lg:h-full"
         >
           <PersonCard />
         </div>
 
         <!-- 右侧：CardsBoard -->
         <div
-          class="lg:col-span-6 h-full flex justify-center items-center overflow-hidden"
+          class="flex h-full min-w-0 items-center justify-center overflow-hidden"
         >
           <CardsBoard />
         </div>

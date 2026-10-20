@@ -14,8 +14,8 @@
             :key="i"
             class="absolute rounded-full border border-white/10 animate-water-ripple"
             :style="{
-              width: '90px',
-              height: '90px',
+              width: '5.625rem',
+              height: '5.625rem',
               animationDelay: `${i * 1.5}s`
             }"
           />
@@ -38,7 +38,7 @@
           </h1>
           <div class="flex items-center gap-4 mt-2">
             <span class="h-px w-6 bg-white/60" />
-            <p class="text-[10px] tracking-[0.6em] font-light uppercase italic">
+            <p class="text-[0.625rem] tracking-[0.6em] font-light uppercase italic">
               {{ occupation }}
             </p>
             <span class="h-px w-6 bg-white/60" />
@@ -46,7 +46,7 @@
         </div>
 
         <div class="w-full text-center">
-          <p class="text-[11px] text-(--text-color) font-serif italic leading-relaxed tracking-[0.15em] mx-auto max-w-60">
+          <p class="text-[0.6875rem] text-(--text-color) font-serif italic leading-relaxed tracking-[0.15em] mx-auto max-w-60">
             "时间如水，流过指尖的唯有此间清晨"
           </p>
         </div>

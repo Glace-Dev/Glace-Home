@@ -20,6 +20,10 @@
   --text-color: #141414;
 }
 
+html {
+  font-size: max(16px, min(1.25vw, 2.234vh));
+}
+
 .dark{
   --text-color: #EDEDED;
 }

@@ -9,7 +9,7 @@
     >
       <div class="px-6 py-10 sm:pt-4 sm:pb-0 flex flex-col sm:flex-row justify-between items-center select-none gap-6 sm:gap-0">
         <div class="flex flex-col sm:flex-row items-center gap-4 overflow-hidden">
-          <p class="text-[11px] sm:text-[10px] text-(--text-color) font-bold tracking-widest truncate uppercase text-center sm:text-left">
+          <p class="text-[0.6875rem] sm:text-[0.625rem] text-(--text-color) font-bold tracking-widest truncate uppercase text-center sm:text-left">
             {{ playerData.name }} <span class="mx-1 opacity-50">•</span>
             {{ playerData.artist }}
           </p>
@@ -43,10 +43,10 @@
           </div>
         </div>
         <div class="hidden sm:flex items-center gap-1.5 opacity-60">
-          <span class="text-[8px] font-bold tracking-[0.2em] uppercase">Aplayer</span>
+          <span class="text-[0.5rem] font-bold tracking-[0.2em] uppercase">Aplayer</span>
           <UIcon
             name="i-heroicons-musical-note-16-solid"
-            class="text-[10px]"
+            class="text-[0.625rem]"
           />
         </div>
       </div>
@@ -61,7 +61,7 @@
             >
               <p
                 :key="currentLyric"
-                class="sm:pl-4 text-[12px] sm:text-[11px] text-[#47FFE7] font-serif italic tracking-widest leading-relaxed text-center sm:text-left"
+                class="sm:pl-4 text-[0.75rem] sm:text-[0.6875rem] text-[#47FFE7] font-serif italic tracking-widest leading-relaxed text-center sm:text-left"
               >
                 {{ currentLyric || "纯音乐，请欣赏" }}
               </p>
@@ -76,7 +76,7 @@
             <div class="flex flex-col items-center sm:items-start">
               <div class="flex items-baseline gap-2">
                 <span class="text-3xl sm:text-2xl font-light text-white/90">{{ weather.temp }}°</span>
-                <span class="text-[10px] sm:text-[9px] text-white/20 uppercase tracking-[0.2em]">
+                <span class="text-[0.625rem] sm:text-[0.5625rem] text-white/20 uppercase tracking-[0.2em]">
                   {{ weather.description }} / {{ weather.city }}
                 </span>
               </div>
@@ -92,7 +92,7 @@
                 :key="index"
                 :title="`${day.date}: ${day.contributionCount} commits`"
                 :class="[
-                  'w-3 h-3 sm:w-2.5 sm:h-2.5 rounded-[2px] transition-all duration-700 hover:scale-125 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]',
+                  'w-3 h-3 sm:w-2.5 sm:h-2.5 rounded-[0.125rem] transition-all duration-700 hover:scale-125 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]',
                   getLevelClass(day.contributionLevel)
                 ]"
               />
@@ -101,11 +101,11 @@
               <div
                 v-for="i in 48"
                 :key="i"
-                class="w-3 h-3 sm:w-2.5 sm:h-2.5 rounded-[2px] bg-white/5 animate-pulse"
+                class="w-3 h-3 sm:w-2.5 sm:h-2.5 rounded-[0.125rem] bg-white/5 animate-pulse"
               />
             </template>
           </div>
-          <p class="text-[9px] sm:text-[8px] text-(--text-color) font-mono tracking-widest uppercase mt-1 opacity-70">
+          <p class="text-[0.5625rem] sm:text-[0.5rem] text-(--text-color) font-mono tracking-widest uppercase mt-1 opacity-70">
             {{ githubUsername }} • {{ contributionData.reduce((acc, cur) => acc + (cur.contributionCount || 0), 0) }} Pushes in 48D
           </p>
         </div>
@@ -120,13 +120,13 @@
 </template>
 
 <script setup lang="ts">
+import userConfig from '../../config'
+
 // 全局状态接入
 const playState = usePlayState()
 const playerShow = usePlayerShow()
 const playerVolume = usePlayerVolume()
 const playerData = usePlayerData()
-
-import userConfig from '../../config'
 
 // 本地渲染状态
 const currentLyric = ref('已准备好音乐ヾ(≧▽≦*)o')
