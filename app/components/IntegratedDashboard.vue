@@ -143,7 +143,8 @@ const getMusicList = async (
   type = userConfig.musicConfig?.type || 'playlist'
 ) => {
   const result = await fetch(
-    `https://metingjsapi.vercel.app/api?server=${server}&type=${type}&id=${id}`
+    // `https://metingjsapi.vercel.app/api?server=${server}&type=${type}&id=${id}` // metingjs官方接口
+    `https://v.iarc.top/?server=${server}&type=${type}&id=${id}` // 公益接口
   )
   const list = await result.json()
   return list.map((song: any) => ({
